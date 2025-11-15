@@ -1,6 +1,12 @@
 
 # GENESI-MVC-TEMPLATE
-> Template MVC Base em PHP
+> Template MVC Base em PHP  
+
+<img src="https://img.shields.io/badge/license-MIT-green"><img/>
+<img src="https://img.shields.io/badge/version-1.0.0-blue"><img/>
+<img src="https://img.shields.io/badge/biuld-2511151456-orange"><img/>
+
+Ver mais em [Changelog](./docs/v1.0.0/whatsnew.md)
 
 ## Sobre o Projeto
 Este repositório serve como um Template Base (Boilerplate) para o desenvolvimento rápido de aplicações web com PHP Puro e o Padrão de Projeto MVC (Model-View-Controller).
@@ -12,9 +18,20 @@ Foi desenhado para ser um ponto de partida limpo e performático, ideal para pro
 
 **Autoloading PSR-4**: Uso do Composer para carregamento automático de classes, garantindo um código organizado e moderno.
 
-**Rotas Simples**: Mecanismo de roteamento básico implementado no ponto de entrada (public/index.php).
+**Rotas por Nome de Classe (Convenção)**: O roteamento é realizado por convenção, mapeando diretamente a URL solicitada ao nome exato do arquivo Controller correspondente (Ex: url/Login busca por Login.php).
 
 **Boas Práticas**: Nomenclatura de diretórios em CamelCase e Plural (Controllers, Models) para alinhamento com namespaces PHP.
+
+### Arquitetura de Roteamento
+**Roteamento por Convenção**: Este template utiliza uma abordagem de roteamento minimalista baseada em Convenção sobre Configuração, inspirada no projeto base.
+
+Princípio: A URI (Uniform Resource Identifier) é utilizada para carregar dinamicamente o Controller com o nome correspondente.
+
+**Limitação**: Esta simplicidade significa que não há suporte nativo para criação de aliases de rota (URL amigáveis diferentes do nome da classe) ou para parâmetros complexos de rota.
+
+**Vantagem**: Facilita a compreensão imediata do fluxo e a criação rápida de novos endpoints sem necessidade de um arquivo de configuração de rotas dedicado.
+
+**Tratamento de Erros**: Qualquer Controller não encontrado resulta em um redirecionamento para a página de erro 404 - Page Not Found.
 
 ### Inspiração e Créditos
 A inspiração e a base conceitual para a arquitetura deste template vieram da leitura e estudo do artigo:
