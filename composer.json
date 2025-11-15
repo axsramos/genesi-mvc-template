@@ -1,0 +1,21 @@
+{
+    "name": "axsramos/genesi-mvc-template",
+    "description": "Template base MVC em PHP para projetos rápidos e portfólio.",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alex Ramos",
+            "email": "axsramos@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.0"
+    }
+}
