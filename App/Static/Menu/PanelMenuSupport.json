@@ -1,0 +1,208 @@
+{
+  "PanelMenuSupport": [
+    {
+      "Program": "CP",
+      "Title": "Configuração Padrão",
+      "Description": "Aplique rapidamente a configuração padrão para iniciar o primeiro acesso em seu ambiente.",
+      "Icon": "fas fa-rocket fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "/Support/CP",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "PI",
+      "Title": "Pacote de Instalação",
+      "Description": "Contrate, ative ou atualize pacotes de aplicativos disponibilizados na plataforma.",
+      "Icon": "fas fa-industry fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "VA",
+      "Title": "Variáveis do Ambiente",
+      "Description": "Modifique os valores de variáveis do ambiente nos arquivos de configuração da plataforma.",
+      "Icon": "fas fa-server fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "BD",
+      "Title": "Base de Dados",
+      "Description": "Configurações e informações da base de dados da aplicação e outros aplicativos.",
+      "Icon": "fas fa-database fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "ES",
+      "Title": "E-mail de Serviço",
+      "Description": "Configure a conta de e-mail para notificar mensagens de serviços para equipes e clientes.",
+      "Icon": "fas fa-at fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "TL",
+      "Title": "Terminais & Licenças",
+      "Description": "Faça a gestão de terminais com acesso limitado e tokens para acessar serviços da plataforma.",
+      "Icon": "fas fa-desktop fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "LA",
+      "Title": "Logs & Auditoria",
+      "Description": "Consulte dados de navegação, mensagens do sistemas, alertas e relatórios de auditoria.",
+      "Icon": "fas fa-business-time fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "AP",
+      "Title": "Aplicativos",
+      "Description": "Consulte os aplicativos disponibilizados na plataforma e detalhes dos pacotes de instalação.",
+      "Icon": "fas fa-shapes fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "CA",
+      "Title": "Conta de Administrador",
+      "Description": "Faça a gestão de contas administrativas. É requerido ao menos 1 conta de administrador.",
+      "Icon": "fas fa-user-tie fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "CS",
+      "Title": "Conta de Suporte",
+      "Description": "Faça a gestão de contas de suporte. É requerido ao menos 1 conta de suporte.",
+      "Icon": "fas fa-user-astronaut fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "CU",
+      "Title": "Conta de Usuário",
+      "Description": "Faça a gestão de contas de usuário. Configure contas de acesso em um contexto sem tenant.",
+      "Icon": "fas fa-user fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    },
+    {
+      "Program": "RE",
+      "Title": "Repositórios",
+      "Description": "Faça a gestão de repositórios e gere relatórios de consumo de espaço em disco.",
+      "Icon": "fas fa-inbox fa-5x",
+      "Visible": true,
+      "Action": [
+        {
+          "Label": "Em breve",
+          "Icon": "",
+          "Link": "#",
+          "Class": "btn btn-primary",
+          "Visible": true,
+          "Enabled": false
+        }
+      ]
+    }
+  ]
+}

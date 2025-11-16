@@ -14,3 +14,29 @@ RewriteRule ^ index.php [L]
 <Files .htaccess>
     Require all denied
 </Files>
+
+# Deny access to .env file
+<Files .env>
+    Require all denied
+</Files>
+
+# Deny access to .gitignore file
+<Files .gitignore>
+    Require all denied
+</Files>
+
+# Deny access to composer files
+<Files composer.json>
+    Require all denied
+</Files>
+<Files composer.lock>
+    Require all denied
+</Files>
+
+# Deny access to documentation files
+<Files README.md>
+    Require all denied
+</Files>
+<FilesMatch "^(docs/.*)$">
+    Require all denied
+</FilesMatch>

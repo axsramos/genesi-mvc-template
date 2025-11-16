@@ -1,0 +1,40 @@
+{
+    "SideMenu": [
+        {
+            "Description": "PRINCIPAL",
+            "Items": [
+                {
+                    "Description": "Home",
+                    "Icon": "fas fa-home",
+                    "Link": "/Home",
+                    "SubItems": []
+                },
+                {
+                    "Description": "Dashboard",
+                    "Icon": "fas fa-tachometer-alt",
+                    "Link": "/Dashboard",
+                    "SubItems": []
+                }
+            ]
+        },
+        {
+            "Description": "PORTAL",
+            "Items": [
+                {
+                    "Description": "Gerencial",
+                    "Icon": "fas fa-book-open",
+                    "Link": "",
+                    "Anchor": "Gerencial",
+                    "SubItems": [
+                        {
+                            "Description": "Dashboard Admin",
+                            "Icon": "fas fa-tachometer-alt",
+                            "Link": "/Dashboard",
+                            "SubItems": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -11,7 +11,7 @@ Ver mais em [Changelog](./docs/v1.0.0/whatsnew.md)
 ## Sobre o Projeto
 Este repositório serve como um Template Base (Boilerplate) para o desenvolvimento rápido de aplicações web com PHP Puro e o Padrão de Projeto MVC (Model-View-Controller).
 
-Foi desenhado para ser um ponto de partida limpo e performático, ideal para projetos freelance ou internos, como o Portal SITI (portalsiti.com.br), permitindo que a lógica de negócio seja o foco principal. O projeto adere a boas práticas de código e estrutura moderna.
+Foi desenhado para ser um ponto de partida limpo e performático, ideal para projetos freelance ou internos, permitindo que a lógica de negócio seja o foco principal. O projeto adere a boas práticas de código e estrutura moderna.
 
 ### Características Principais
 **Padrão MVC**: Separação clara das responsabilidades entre dados (Models), apresentação (Views) e fluxo (Controllers).
@@ -88,6 +88,3 @@ Alex Ramos
 Portfólio: https://cvfacil.com.br/resume/id/90f9d65ca835079288ac016b003ed1a8
 
 GitHub: https://github.com/axsramos
-
-Projetos SAAS: https://portalsiti.com.br
-

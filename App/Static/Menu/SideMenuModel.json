@@ -1,0 +1,111 @@
+{
+    "SideMenu": [
+        {
+            "Description": "CORE",
+            "Items": [
+                {
+                    "Description": "Dashboard",
+                    "Icon": "fas fa-tachometer-alt",
+                    "Link": "/Dashboard",
+                    "SubItems": []
+                }
+            ]
+        },
+        {
+            "Description": "INTERFACE",
+            "Items": [
+                {
+                    "Description": "Layouts",
+                    "Icon": "fas fa-columns",
+                    "Link": "",
+                    "Anchor": "Layouts",
+                    "SubItems": [
+                        {
+                            "Description":"Navigation",
+                            "Icon": "",
+                            "Link": "#",
+                            "SubItems": []
+                        },
+                        {
+                            "Description":"Light Sidenav",
+                            "Icon": "",
+                            "Link": "#",
+                            "SubItems": []
+                        }
+                    ]
+                },
+                {
+                    "Description": "Pages",
+                    "Icon": "fas fa-book-open",
+                    "Link": "",
+                    "Anchor": "Pages",
+                    "SubItems": [
+                        {
+                            "Description":"Authentication",
+                            "Icon": "",
+                            "Link": "#",
+                            "Anchor": "Auth",
+                            "SubItems": [
+                                {
+                                    "Description":"Login",
+                                    "Icon": "",
+                                    "Link": "#"
+                                },
+                                {
+                                    "Description":"Register",
+                                    "Icon": "",
+                                    "Link": "#"
+                                },
+                                {
+                                    "Description":"Password",
+                                    "Icon": "",
+                                    "Link": "#"
+                                }
+                            ]
+                        },
+                        {
+                            "Description":"Error",
+                            "Icon": "",
+                            "Link": "#",
+                            "Anchor": "Error",
+                            "SubItems": [
+                                {
+                                    "Description":"401 Page",
+                                    "Icon": "",
+                                    "Link": "#"
+                                },
+                                {
+                                    "Description":"404 Page",
+                                    "Icon": "",
+                                    "Link": "#"
+                                },
+                                {
+                                    "Description":"500 Page",
+                                    "Icon": "",
+                                    "Link": "#"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Description": "ADDONS",
+            "Items": [
+                {
+                    "Description": "Charts",
+                    "Icon": "fas fa-chart-area",
+                    "Link": "#",
+                    "SubItems": []
+                },
+                {
+                    "Description": "Tables",
+                    "Icon": "fas fa-table",
+                    "Link": "#",
+                    "SubItems": []
+                }
+            ]
+        }
+    ]
+}
