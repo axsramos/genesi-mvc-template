@@ -3,10 +3,10 @@
 > Template MVC Base em PHP  
 
 <img src="https://img.shields.io/badge/license-MIT-green"><img/>
-<img src="https://img.shields.io/badge/version-1.0.0-blue"><img/>
-<img src="https://img.shields.io/badge/biuld-2511151456-orange"><img/>
+<img src="https://img.shields.io/badge/version-1.1.0-blue"><img/>
+<img src="https://img.shields.io/badge/biuld-2511161859-orange"><img/>
 
-Ver mais em [Changelog](./docs/v1.0.0/whatsnew.md)
+Ver mais em [Changelog](./docs/v1.1.0/whatsnew.md)
 
 ## Sobre o Projeto
 Este repositório serve como um Template Base (Boilerplate) para o desenvolvimento rápido de aplicações web com PHP Puro e o Padrão de Projeto MVC (Model-View-Controller).

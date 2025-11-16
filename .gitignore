@@ -1,4 +1,5 @@
 /vendor/
 /Repositories/
 /Temp/
+/dist/
 .env
