@@ -2,8 +2,11 @@
 
 namespace App\Controls\Menu;
 
+use App\Class\Auth\AuthClass;
 use App\Core\Config;
 use App\Core\AuthSession;
+use App\Models\CAS\CasMnuModel;
+use App\Models\CAS\CasMnaModel;
 
 class SideMenuControls
 {
@@ -33,9 +36,9 @@ class SideMenuControls
         $data = json_decode($dataContent);
 
         /**
-         * Remove ADMIN menu if user is not ADMINISTRADOR PORTAL
+         * Remove PORTAL SITI menu if user is not ADMINISTRADOR PORTALSITI
          * This is a security measure to prevent unauthorized access to the portal menu.
-         * ADMINISTRADOR PORTAL profile is exclusive to the Portal.
+         * ADMINISTRADOR PORTALSITI profile is exclusive to the SITI Portal.
          */
         $isRemove = true;
         if (isset(AuthSession::get()['PROFILE'])) {
@@ -63,6 +66,141 @@ class SideMenuControls
             unset($data->SideMenu[2]); // Menu CONTROLE DE ACESSO //
         }
 
+        /**
+         * Build dinamic menu
+         */
+        if (AuthSession::get()['USR_LOGGED'] !== 'anonymous') {
+            $data = self::mountMenu((array) $data);
+        }
+
         return $data;
+    }
+
+    private static function loadMenuWithPermissions(): array
+    {
+        $menuTree = array();
+
+        if (Config::$STATIC_AUTHETICATION === true) {
+            return $menuTree;
+        }
+
+        $rps_id = (AuthSession::get()['RPS_ID'] ?? '');
+
+        $obCasMnuModel = new CasMnuModel();
+        $obCasMnuModel->CasRpsCod = $rps_id;
+        $obCasMnuModel->setSelectedFields(['CasRpsCod', 'CasMnuCod']);
+
+        if ($obCasMnuModel->readAllLinesJoin(['CasRps'])) {
+            foreach ($obCasMnuModel->getRecords() as $menuItem) {
+                $obCasMnaModel = new CasMnaModel();
+                $obCasMnaModel->CasRpsCod = $menuItem['CasRpsCod'];
+                $obCasMnaModel->CasMnuCod = $menuItem['CasMnuCod'];
+                $obCasMnaModel->setSelectedFields(['CasRpsCod', 'CasMnuCod', 'CasMnuDsc', 'CasMnuGrp', 'CasMnuBlq', 'CasMnaCod', 'CasPrgCod', 'CasMnaDsc', 'CasMnaBlq', 'CasMnaLnk', 'CasMnaIco', 'CasMnaGrp']);
+                if ($obCasMnaModel->readAllLinesJoin(['CasRps', 'CasMnu'])) {
+                    foreach ($obCasMnaModel->getRecords() as $mnaItem) {
+                        if ($mnaItem['CasPrgCod'] === '_blank') {
+                            $menuTree[$menuItem['CasMnuCod']][$mnaItem['CasMnaCod']] = $mnaItem;
+                        } else {
+                            $obAuthClass = new AuthClass();
+                            $dataPermissions = $obAuthClass->permissions($mnaItem['CasPrgCod'], false);
+                            if (in_array('AUTHORIZED', $dataPermissions)) {
+                                $menuTree[$menuItem['CasMnuCod']][$mnaItem['CasMnaCod']] = $mnaItem;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $menuTree;
+    }
+
+    private static function mountMenu(array $data): object
+    {
+        $menuTree = self::loadMenuWithPermissions();
+
+        foreach ($menuTree as $menuItem) {
+            $groups = array();
+            foreach ($menuItem as $menuSubItem) {
+                if ($menuSubItem['CasMnaDsc'] != $menuSubItem['CasMnaGrp']) {
+                    array_push($groups, $menuSubItem['CasMnaGrp']);
+                }
+            }
+            $groups = array_values(array_unique($groups));
+
+            if ($groups) {
+                // module and group //
+                foreach ($groups as $keyGroup => $group) {
+                    $idx = 0;
+                    foreach ($menuItem as $menuSubItem) {
+                        if ($menuSubItem['CasMnaGrp'] == $group) {
+                            if (! isset($data['SideMenu'][$menuSubItem['CasMnuDsc']]['Description'])) {
+                                // module //
+                                $data['SideMenu'][$menuSubItem['CasMnuDsc']] = array(
+                                    'Description' => $menuSubItem['CasMnuDsc'],
+                                    'Items' => array()
+                                );
+                            }
+                            // group //
+                            $add = true;
+                            foreach ($data['SideMenu'][$menuSubItem['CasMnuDsc']]['Items'] as $item) {
+                                if ($item['Description'] == $menuSubItem['CasMnaGrp']) {
+                                    $add = false;
+                                    break;
+                                }
+                            }
+                            if ($add) {
+                                $data['SideMenu'][$menuSubItem['CasMnuDsc']]['Items'][] = array(
+                                    'Description' => $menuSubItem['CasMnaGrp'],
+                                    'Icon' => $menuSubItem['CasMnaIco'],
+                                    'Link' => $menuSubItem['CasMnaLnk'],
+                                    "Anchor" => $menuSubItem['CasMnaGrp'],
+                                    'SubItems' => array()
+                                );
+                            }
+                            // item //
+                            $data['SideMenu'][$menuSubItem['CasMnuDsc']]['Items'][$keyGroup]['SubItems'][$idx] = array(
+                                "Description" => $menuSubItem['CasMnaDsc'],
+                                "Icon" => $menuSubItem['CasMnaIco'],
+                                "Link" => $menuSubItem['CasMnaLnk'],
+                                "Anchor" => $menuSubItem['CasMnaDsc'],
+                                "SubItems" => array()
+                            );
+
+                            // subitem //
+                            // todo... //
+                            //
+                            $idx++;
+                        }
+                    }
+                }
+            } else {
+                foreach ($menuItem as $menuSubItem) {
+                    if (isset($data['SideMenu'][$menuSubItem['CasMnuDsc']])) {
+                        $data['SideMenu'][$menuSubItem['CasMnuDsc']]['Items'][] = array(
+                            "Description" => $menuSubItem['CasMnaDsc'],
+                            "Icon" => $menuSubItem['CasMnaIco'],
+                            "Link" => $menuSubItem['CasMnaLnk'],
+                            "SubItems" => array()
+                        );
+                        continue;
+                    }
+                    // first element //
+                    $data['SideMenu'][$menuSubItem['CasMnuDsc']] = array(
+                        "Description" => $menuSubItem['CasMnuDsc'],
+                        "Items" => array(
+                            array(
+                                "Description" => $menuSubItem['CasMnaDsc'],
+                                "Icon" => $menuSubItem['CasMnaIco'],
+                                "Link" => $menuSubItem['CasMnaLnk'],
+                                "SubItems" => array()
+                            ),
+                        )
+                    );
+                }
+            }
+        }
+
+        return (object) $data;
     }
 }

@@ -20,7 +20,10 @@ class Config
     public static $APP_URL = null;
     public static $MAIL_SERVICE = null;
     public static $MAIL = null;
+    public static $STATIC_AUTHETICATION = null;
     public static $AUTHENTICATION_SESSION_LIMIT = null;
+    public static $DB_STORAGE = null;
+    public static $MONITORING_QUERY = null;
     private static $instance = null;
     private static $envs = null;
 
@@ -84,7 +87,36 @@ class Config
         ini_set('display_errors', self::$APP_DEBUG);
 
         self::$APP_URL = self::$envs['APP_URL'];
+        self::$STATIC_AUTHETICATION = (self::$envs['STATIC_AUTHETICATION'] == 'true'? true : false);
         self::$AUTHENTICATION_SESSION_LIMIT = self::$envs['AUTHENTICATION_SESSION_LIMIT'];
+
+        /**
+         * Database Default
+         */
+        self::$DB_STORAGE = array(
+            'Default' => array(
+                'DB_CONNECTION' => self::$envs['DB_CONNECTION'],
+                'DB_HOST' => self::$envs['DB_HOST'],
+                'DB_PORT' => self::$envs['DB_PORT'],
+                'DB_DATABASE' => self::$envs['DB_DATABASE'],
+                'DB_USERNAME' => self::$envs['DB_USERNAME'],
+                'DB_PASSWORD' => self::$envs['DB_PASSWORD'],
+                'DB_CHARSET' => self::$envs['DB_CHARSET'],
+                'DB_COLLATION' => self::$envs['DB_COLLATION'],
+                'DB_PREFIX' => self::$envs['DB_PREFIX'],
+            ),
+            'SAAS' => array(
+                'DB_CONNECTION' => self::$envs['DB_SAAS_CONNECTION'],
+                'DB_HOST' => self::$envs['DB_SAAS_HOST'],
+                'DB_PORT' => self::$envs['DB_SAAS_PORT'],
+                'DB_DATABASE' => self::$envs['DB_SAAS_DATABASE'],
+                'DB_USERNAME' => self::$envs['DB_SAAS_USERNAME'],
+                'DB_PASSWORD' => self::$envs['DB_SAAS_PASSWORD'],
+                'DB_CHARSET' => self::$envs['DB_SAAS_CHARSET'],
+                'DB_COLLATION' => self::$envs['DB_SAAS_COLLATION'],
+                'DB_PREFIX' => self::$envs['DB_SAAS_PREFIX'],
+            ),
+        );
 
         /**
          * Define Service Mail
@@ -123,7 +155,9 @@ class Config
     public static function getPageGroup()
     {
         return array(
-            'auth'
+            'auth',
+            'manager',
+            'support'
         );
     }
 

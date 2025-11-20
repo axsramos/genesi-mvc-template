@@ -5,6 +5,17 @@ namespace App\Class\Auth;
 use App\Shared\MessageDictionary;
 use App\Core\AuthSession;
 use App\Core\Config;
+use App\Models\CAS\CasAfuModel;
+use App\Models\CAS\CasFunModel;
+use App\Models\CAS\CasFprModel;
+use App\Models\CAS\CasSwnModel;
+use App\Models\CAS\CasSwpModel;
+use App\Models\CAS\CasPrgModel;
+use App\Models\CAS\CasMprModel;
+use App\Models\CAS\CasMdlModel;
+use App\Models\CAS\CasPfuModel;
+use App\Models\CAS\CasPfiModel;
+use App\Models\CAS\CasApfModel;
 
 class AuthClass
 {
@@ -37,9 +48,6 @@ class AuthClass
 
         // Apply new data //
         AuthSession::set('USR_AUTH', $user_auth);
-
-        // AUTHENTICATION_SESSION_LIMIT //
-        AuthSession::set('EXPIRES', time() + Config::$AUTHENTICATION_SESSION_LIMIT);
     }
 
     protected function newTokenPassword(): string
@@ -147,28 +155,225 @@ class AuthClass
     public function permissions(string $prg_id, bool $cached = true): array
     {
         $dataPermissions = [];
+        $dataFuncionalities = [];
 
         if (AuthSession::get()['EXPIRES'] < time()) {
             AuthSession::logout();
             return $dataPermissions; // session expired //
         }
 
-        $dataPermissions = ['AUTHORIZED']; // for static authentication, descontinue in the next version //
+        // debug start //
+        // return ['AUTHORIZED'];
+        // debug end //
+        
+        // todo: obter permissöes do cache //
+        if ($cached) {
+            if (isset(AuthSession::get()['AUTHORIZATION']['PROGRAMS'][$prg_id]['FUNCIONALITIES'])) {
+                $dataPermissions = AuthSession::get()['AUTHORIZATION']['PROGRAMS'][$prg_id]['FUNCIONALITIES'];
+            }
+        }
 
-        /**
-         * check permission - next version
-         */
-        // if ($cached) {
-        //     if (isset(AuthSession::get()['AUTHORIZATION']['PROGRAMS'][$prg_id]['FUNCIONALITIES'])) {
-        //         $dataPermissions = AuthSession::get()['AUTHORIZATION']['PROGRAMS'][$prg_id]['FUNCIONALITIES'];
-        //     }
-        // }
+        if (empty($dataPermissions)) {
+            $dataPermissions = $this->funcionalities($prg_id);
+            $authorization = AuthSession::get()['AUTHORIZATION'];
+            $authorization['PROGRAMS'][$prg_id]['FUNCIONALITIES'] = $dataPermissions;
+            AuthSession::set('AUTHORIZATION', $authorization);
+        }
+        
+        return $dataPermissions;
+    }
 
-        // if (empty($dataPermissions)) {
-        //     $authorization = AuthSession::get()['AUTHORIZATION'];
-        //     AuthSession::set('AUTHORIZATION', $authorization);
-        // }
+    public function authorizations(string $prg_id): array
+    {
+        $dataPermissions = [];
+        $dataPerfils = [];
+        $authorizedProgram = false;
+
+        $obCasPfuModel = new CasPfuModel();
+        $obCasPfuModel->setSelectedFields(['CasRpsCod', 'CasPfiCod', 'CasUsrCod', 'CasPfiBlq']);
+        $obCasPfuModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+        $obCasPfuModel->CasUsrCod = AuthSession::get()['USR_ID'];
+        if ($obCasPfuModel->readRegisterJoin(['CasRpu'])) {
+            foreach ($obCasPfuModel->getRecords() as $perfil) {
+                if ($perfil['CasPfiBlq'] == 'N'){
+                    array_push($dataPerfils, $perfil['CasPfiCod']);
+                }
+            }
+        }
+        
+        // check program access authorization //
+        $perfilsDoPrograma = [];
+        if ($dataPerfils) {
+            $obCasApfModel = new CasApfModel();
+            $obCasApfModel->setSelectedFields(['CasRpsCod', 'CasPfiCod', 'CasUsrCod', 'CasPrgCod']);
+            $obCasApfModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+            $obCasApfModel->CasUsrCod = AuthSession::get()['USR_ID'];
+            $obCasApfModel->CasPrgCod = $prg_id;
+            if($obCasApfModel->readRegisterJoin(['CasRpu', 'CasPrg'])) {
+                foreach ($obCasApfModel->getRecords() as $perfilPrograma) {
+                    array_push($perfilsDoPrograma, $perfilPrograma['CasPfiCod']);
+                    foreach ($dataPerfils as $perfilUsuario) {
+                        if ($perfilUsuario == $perfilPrograma['CasPfiCod']) {
+                            $authorizedProgram = true;
+                            break;
+                        }
+                    }
+                    if ($authorizedProgram) {
+                        break;
+                    }
+                }
+            }
+
+            // check program functionality authorization //
+            if ($authorizedProgram && count($perfilsDoPrograma) > 0) {
+                foreach ($perfilsDoPrograma as $perfil) {
+                    $obCasAfuModel = new CasAfuModel();
+                    $obCasAfuModel->setSelectedFields(['CasRpsCod', 'CasPfiCod', 'CasUsrCod', 'CasPrgCod', 'CasFunCod']);
+                    $obCasAfuModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+                    $obCasAfuModel->CasPfiCod = $perfil;
+                    $obCasAfuModel->CasUsrCod = AuthSession::get()['USR_ID'];
+                    $obCasAfuModel->CasPrgCod = $prg_id;
+                    if ($obCasAfuModel->readRegisterJoin(['CasApf', 'CasRpsCod', 'CasPrgCod'])) {
+                        foreach ($obCasAfuModel->getRecords() as $funcionality) {
+                            array_push($dataPermissions, $funcionality['CasFunCod']);
+                        }
+                    }
+                }
+            }
+        }
 
         return $dataPermissions;
+    }
+
+    public function funcionalities(string $prg_id): array
+    {
+        $dataFuncionalities = [];
+
+        $obCasPrgModel = new CasPrgModel();
+        $obCasPrgModel->setSelectedFields(['CasRpsCod', 'CasPrgCod', 'CasPrgBlq']);
+        $obCasPrgModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+        $obCasPrgModel->CasPrgCod = $prg_id;
+        $vCasPrgBlq = 'N';
+        $vCasPrgTst = 'S';
+        $vCasMdlBlq = 'N';
+
+        // check program test or blocked //
+        if ($obCasPrgModel->readRegister()) {
+            $vCasPrgTst = $obCasPrgModel->CasPrgTst;
+            $vCasPrgBlq = $obCasPrgModel->CasPrgBlq;
+
+            if ($vCasPrgTst == 'S') {
+                if (AuthSession::get()['PROFILE'] != 'USER QUALITY TEST') {
+                    return $dataFuncionalities; // access denied //
+                }
+            }
+
+            // check program blocked //
+            if ($vCasPrgBlq == 'S') {
+                return $dataFuncionalities; // access denied //
+            } else {
+                // check module blocked //
+                $obCasMprModel = new CasMprModel();
+                $obCasMprModel->setSelectedFields(['CasRpsCod', 'CasPrgCod', 'CasMdlCod']);
+                $obCasMprModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+                $obCasMprModel->CasPrgCod = $prg_id;
+                if ($obCasMprModel->readRegisterJoin(['CasRps', 'CasPrg'])) {
+                    foreach ($obCasMprModel->getRecords() as $modules) {
+                        foreach ($modules as $key => $value) {
+                            if ($key == 'CasMdlCod') {
+                                $obCasMdlModel = new CasMdlModel();
+                                $obCasMdlModel->setSelectedFields(['CasRpsCod', 'CasMdlCod', 'CasMdlBlq']);
+                                $obCasMdlModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+                                $obCasMdlModel->CasMdlCod = $value;
+                                if ($obCasMdlModel->readRegister()) {
+                                    $vCasMdlBlq = $obCasMdlModel->CasMdlBlq;
+                                }
+                            }
+                        }
+                        if ($vCasMdlBlq == 'S') {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // check funcionalities blocked //
+            if ($vCasMdlBlq == 'N') {
+                $obCasFprModel = new CasFprModel();
+                $obCasFprModel->setSelectedFields(['CasRpsCod', 'CasPrgCod', 'CasFunCod', 'CasFprCod']);
+                $obCasFprModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+                $obCasFprModel->CasPrgCod = $prg_id;
+                if ($obCasFprModel->readRegisterJoin(['CasRps', 'CasPrg'])) {
+                    foreach ($obCasFprModel->getRecords()  as $funcionalities) {
+                        foreach ($funcionalities as $key => $value) {
+                            if ($key == 'CasFunCod') {
+                                $obCasFunModel = new CasFunModel();
+                                $obCasFunModel->setSelectedFields(['CasRpsCod', 'CasPrgCod', 'CasFunCod', 'CasFunDsc', 'CasFunBlq']);
+                                $obCasFunModel->CasRpsCod = AuthSession::get()['RPS_ID'];
+                                $obCasFunModel->CasPrgCod = $prg_id;
+                                $obCasFunModel->CasFunCod = $value;
+                                if ($obCasFunModel->readRegister()) {
+                                    foreach ($obCasFunModel->getRecords() as $funcionalityItem) {
+                                        if ($funcionalityItem['CasFunBlq'] == 'N') {
+                                            array_push($dataFuncionalities, $funcionalityItem['CasFunCod']);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $dataFuncionalities;
+    }
+
+    public function setProgramHistory(string $prg_id, string $details = ''): void
+    {
+        if (Config::$STATIC_AUTHETICATION === false) {
+            $dataSession = AuthSession::get();
+
+            if ($dataSession['RPS_ID'] !== 'anonymous') {
+                $description = array('Program' => $prg_id, 'Details' => $details);
+
+                $obCasSwnModel = new CasSwnModel();
+                $obCasSwnModel->CasRpsCod = $dataSession['RPS_ID'];
+                $obCasSwnModel->CasSwbCod = $dataSession['SSW_ID'];
+                $newId = $obCasSwnModel->getLastId();
+
+                $obCasSwnModel->CasSwnCod = $newId;
+                $obCasSwnModel->CasSwnDsc = json_encode($description);
+                $result = $obCasSwnModel->createRegister();
+            }
+        }
+    }
+
+    public function setProgramParameters(string $prg_id, string $parameters): void
+    {
+        if (Config::$STATIC_AUTHETICATION === false) {
+            $dataSession = AuthSession::get();
+
+            if ($dataSession['RPS_ID'] !== 'anonymous') {
+                $obCasPrgModel = new CasPrgModel();
+                $obCasPrgModel->setSelectedFields(['CasRpsCod', 'CasPrgCod']);
+                $obCasPrgModel->CasRpsCod = $dataSession['RPS_ID'];
+                $obCasPrgModel->CasPrgCod = $prg_id;
+                if ($obCasPrgModel->readRegister()) {
+                    $obCasSwpModel = new CasSwpModel();
+                    $obCasSwpModel->setSelectedFields(['CasRpsCod', 'CasSwbCod', 'CasPrgCod', 'CasSwpTxt']);
+                    $obCasSwpModel->CasRpsCod = $dataSession['RPS_ID'];
+                    $obCasSwpModel->CasSwbCod = $dataSession['SSW_ID'];
+                    $obCasSwpModel->CasPrgCod = $prg_id;
+                    $obCasSwpModel->CasSwpTxt = $parameters;
+                    if ($obCasSwpModel->readRegister()) {
+                        $obCasSwpModel->CasSwpTxt = $parameters;
+                        $result = $obCasSwpModel->updateRegister();
+                    } else {
+                        $result = $obCasSwpModel->createRegister();
+                    }
+                }
+            }
+        }
     }
 }

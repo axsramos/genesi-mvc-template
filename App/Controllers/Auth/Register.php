@@ -61,7 +61,7 @@ class Register extends Controller
             $serviceMail = new ServiceMail();
             $r = $serviceMail->sendMailRegister($this->dataEntry['inputFirstName'], $this->dataEntry['inputEmail']);
             
-            header('Location: /Dashboard');
+            header('Location: /Manager/Dashboard');
           }
         } else {
           $this->formDesign['Message'] = $resultPass;

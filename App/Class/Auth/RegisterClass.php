@@ -5,6 +5,9 @@ namespace App\Class\Auth;
 use App\Class\Auth\AuthClass;
 use App\Core\AuthSession;
 use App\Core\Config;
+use App\Models\CAS\CasRpaModel;
+use App\Class\Manager\CreateUserRepositoryAccount;
+use App\Class\Manager\ApplyApplicationSettings;
 
 class RegisterClass extends AuthClass
 {
@@ -30,61 +33,100 @@ class RegisterClass extends AuthClass
             return $this->message->getMessage(605);
         }
 
-        /**
-         * Static File
-         */
-        $path = Config::getPathUserAccounts();
-
-        if (file_exists($path)) {
-            $dataContent = json_decode(file_get_contents($path));
-            $nextSearchProfile = true;
-
+        if (Config::$STATIC_AUTHETICATION === true) {
             /**
-             * Search for administrator profile
+             * Static File
              */
-            if (isset($dataContent->AdministratorProfile)) {
-                if ($nextSearchProfile) {
-                    foreach ($dataContent->AdministratorProfile as $item) {
-                        if (strtolower($item->Account) == strtolower($data_account['Account'])) {
-                            $result = $this->message->getMessage(606);
-                            $nextSearchProfile = false;
-                            break;
+            $path = Config::getPathUserAccounts();
+
+            if (file_exists($path)) {
+                $dataContent = json_decode(file_get_contents($path));
+                $nextSearchProfile = true;
+
+                /**
+                 * Search for administrator profile
+                 */
+                if (isset($dataContent->AdministratorProfile)) {
+                    if ($nextSearchProfile) {
+                        foreach ($dataContent->AdministratorProfile as $item) {
+                            if (strtolower($item->Account) == strtolower($data_account['Account'])) {
+                                $result = $this->message->getMessage(606);
+                                $nextSearchProfile = false;
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-            /**
-             * Search for other profiles
-             */
-            if (isset($dataContent->OtherProfiles)) {
-                if ($nextSearchProfile) {
-                    foreach ($dataContent->OtherProfiles as $item) {
-                        if (strtolower($item->Account) == strtolower($data_account['Account'])) {
-                            $result = $this->message->getMessage(606);
-                            $nextSearchProfile = false;
-                            break;
+                /**
+                 * Search for other profiles
+                 */
+                if (isset($dataContent->OtherProfiles)) {
+                    if ($nextSearchProfile) {
+                        foreach ($dataContent->OtherProfiles as $item) {
+                            if (strtolower($item->Account) == strtolower($data_account['Account'])) {
+                                $result = $this->message->getMessage(606);
+                                $nextSearchProfile = false;
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-            /**
-             * End of Search. Create new account.
-             */
-            if ($nextSearchProfile) {
-                $user_auth = md5(strtolower($data_account['Account']));
-                $new_data_user = $this->generateDataUser($user_auth, $data_account);
+                /**
+                 * End of Search. Create new account.
+                 */
+                if ($nextSearchProfile) {
+                    $user_auth = md5(strtolower($data_account['Account']));
+                    $new_data_user = $this->generateDataUser($user_auth, $data_account);
 
-                array_push($dataContent->OtherProfiles, $new_data_user);
+                    array_push($dataContent->OtherProfiles, $new_data_user);
 
-                if (file_put_contents($path, json_encode($dataContent))) {
-                    $this->setSessionAuth($user_auth, (object) $new_data_user);
-                    $result = $this->message->getMessage(0);
+                    if (file_put_contents($path, json_encode($dataContent))) {
+                        $this->setSessionAuth($user_auth, (object) $new_data_user);
+                        $result = $this->message->getMessage(0);
+                    }
                 }
+            } else {
+                $result = $this->message->getMessage(602);
             }
         } else {
-            $result = $this->message->getMessage(602);
+            $user_auth = md5(strtolower($data_account['Account']));
+            $new_data_user = $this->generateDataUser($user_auth, $data_account);
+
+            // configure repository and users account //
+            $obCreateUserRepositoryAccount = new CreateUserRepositoryAccount();
+            $obCreateUserRepositoryAccount->run($new_data_user);
+
+            // add application //
+            $obCasRpaModel = new CasRpaModel();
+            $obCasRpaModel->setSelectedFields(['CasRpsCod', 'CasRpaCod', 'CasRpaDsc', 'CasRpaBlq', 'CasRpaGrp']);
+            $obCasRpaModel->CasRpsCod = $user_auth;
+            $obCasRpaModel->CasAppCod = Config::$APP_KEY;
+            if (!$obCasRpaModel->readRegister()) {
+                $obCasRpaModel->CasRpaDsc = Config::$APP_NAME;
+                $obCasRpaModel->CasRpaBlq = 'N';
+                $obCasRpaModel->CasRpaGrp = Config::$APP_NAME;
+                $result = $obCasRpaModel->createRegister();
+            }
+
+            // configure program settings //
+            $obApplyApplicationSettings = new ApplyApplicationSettings();
+            $obApplyApplicationSettings->run($user_auth, Config::$APP_KEY);
+
+            // login user //
+            $obLoginClass = new LoginClass();
+            $result = $obLoginClass->login($data_account['Account'], $data_account['Password'], '');
+
+            $linkRedirect = '/Home';
+
+            if ($result['Code'] == 0 && $result['Type'] == 'SUCCESS') {
+                if (isset(AuthSession::get()['HOME_PAGE']) && !empty(AuthSession::get()['HOME_PAGE'])) {
+                    $linkRedirect = AuthSession::get()['HOME_PAGE'];
+                }
+            }
+
+            header('Location: ' . $linkRedirect);
         }
 
         // create repository //

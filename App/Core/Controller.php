@@ -46,10 +46,18 @@ class Controller
         return SideMenuControls::getSideMenu();
     }
 
-    protected function validateAccess(string $prg_id = ''): void
+    protected function validateAccess(string $prg_id = '', bool $static_page = false): void
     {
         // is anonymous or empty user then redirect to login //
         $redirect_login = true;
+
+        if (Config::$STATIC_AUTHETICATION === true) {
+            if ($static_page) {
+                return;
+            }
+            header('Location: /PartialMaintenance');
+            exit;
+        }
 
         if (AuthSession::get()['USR_LOGGED'] !== 'anonymous') {
             $obLoginClass = new LoginClass();
@@ -57,12 +65,20 @@ class Controller
             
             if (in_array('AUTHORIZED', $dataPermissions)) {
                 $redirect_login = false;
+                // set program history //
+                $obLoginClass->setProgramHistory($prg_id);
             }
         }
 
         if ($redirect_login) {
             header('Location: /Home/Denied');
         }
+    }
+
+    protected function setProgramParameters(string $prg_id, string $parameters): void
+    {
+        $obLoginClass = new LoginClass();
+        $result = $obLoginClass->setProgramParameters($prg_id, $parameters);
     }
 
     protected function getDataInput(array $fields = []): array

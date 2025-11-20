@@ -49,11 +49,11 @@ class EnvironmentVars
 
             // environment application //
             'APP_URL' => 'http://localhost',
-            'STATIC_AUTHETICATION' => false,
+            'STATIC_AUTHETICATION' => true,
             'AUTHENTICATION_SESSION_LIMIT' => 3600,
 
             // api //
-            'API_SBADMIN_TOKEN'=> 'U0JBRE1JTiAtIEdFTkVSSUMgVE9LRU4=',
+            'API_SBADMIN_TOKEN'=> 'U0JBRE1JTiAtIEdFTkVSSUMgVE9LRU4=', // SBADMIN - GENERIC TOKEN //
             'API_SBADMIN_URL'=> 'http://localhost/auth',
 
             // database //
@@ -66,6 +66,17 @@ class EnvironmentVars
             'DB_CHARSET' => 'utf8mb4',
             'DB_COLLATION' => 'utf8mb4_unicode_ci',
             'DB_PREFIX' => '',
+
+            // database //
+            'DB_SAAS_CONNECTION' => 'mysql',
+            'DB_SAAS_HOST' => '127.0.0.1',
+            'DB_SAAS_PORT' => '3306',
+            'DB_SAAS_DATABASE' => 'mysql',
+            'DB_SAAS_USERNAME' => 'root',
+            'DB_SAAS_PASSWORD' => '',
+            'DB_SAAS_CHARSET' => 'utf8mb4',
+            'DB_SAAS_COLLATION' => 'utf8mb4_unicode_ci',
+            'DB_SAAS_PREFIX' => '',
 
             // mail //
             'MAIL_SERVICE' => false,
@@ -100,11 +111,11 @@ class EnvironmentVars
 
         // environment application //
         $envs['APP_URL'] = 'http://localhost:8080';
-        $envs['STATIC_AUTHETICATION'] = true;
+        $envs['STATIC_AUTHETICATION'] = false;
         $envs['AUTHENTICATION_SESSION_LIMIT'] = 86400;
 
         // database //
-        $envs['DB_DATABASE'] = 'local';
+        $envs['DB_DATABASE'] = 'sbadmin_local';
         $envs['DB_USERNAME'] = 'root';
         $envs['DB_PASSWORD'] = '';
         $envs['DB_PREFIX'] = '';
@@ -118,12 +129,12 @@ class EnvironmentVars
         $envs = self::getEnvDefault();
 
         // application //
-        $envs['APP_NAME'] = 'DEV-SBADMIN'; // PROJECT SBADMIN DEVELOPMENT //
-        $envs['APP_KEY'] = 'UFJPSkVDVCBTQkFETUlOIERFVkVMT1BNRU5U';
+        $envs['APP_NAME'] = 'DEV-SBADMIN'; // PROJECT SBADMIN DEV //
+        $envs['APP_KEY'] = 'UFJPSkVDVCBTQkFETUlOIERFVg==';
         $envs['APP_TOKEN'] = '28bfa817-55b6-11f0-8e0d-fc4596f8a36d';
 
         // environment support //
-        $envs['APP_ENV'] = 'development';
+        $envs['APP_ENV'] = 'dev';
         $envs['APP_DEBUG'] = true;
         $envs['MONITORING_QUERY'] = true;
 
@@ -133,7 +144,7 @@ class EnvironmentVars
         $envs['AUTHENTICATION_SESSION_LIMIT'] = 86400;
 
         // database //
-        $envs['DB_DATABASE'] = 'development';
+        $envs['DB_DATABASE'] = 'sbadmin_dev';
         $envs['DB_USERNAME'] = 'root';
         $envs['DB_PASSWORD'] = '';
         $envs['DB_PREFIX'] = '';
@@ -162,7 +173,7 @@ class EnvironmentVars
         $envs['AUTHENTICATION_SESSION_LIMIT'] = 3600;
 
         // database //
-        $envs['DB_DATABASE'] = 'staging';
+        $envs['DB_DATABASE'] = 'sbadmin_staging';
         $envs['DB_USERNAME'] = 'root';
         $envs['DB_PASSWORD'] = '';
         $envs['DB_PREFIX'] = '';

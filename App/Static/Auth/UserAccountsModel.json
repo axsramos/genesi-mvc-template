@@ -1,0 +1,34 @@
+{
+  "AdministratorProfile": [
+    {
+      "FirstName": "Administrator",
+      "LastName": "Account",
+      "Account": "manager-admin@uorak.com",
+      "Password": "a9aa976dbb0d38c94731431dc48a1aee",
+      "Token": "671481",
+      "Repository": "60dc1348618d255fe9b9d81ea4219e48",
+      "USR_ID": "60dc1348618d255fe9b9d81ea4219e48",
+      "USR_LOGGED": "Administrator Account",
+      "PROFILE": "ADMINISTRATOR PORTAL",
+      "LANGUAGE": "pt",
+      "SSW_ID": "60dc1348618d255fe9b9d81ea4219e48",
+      "USR_AUTH": "60dc1348618d255fe9b9d81ea4219e48"
+    }
+  ],
+  "OtherProfiles": [
+    {
+      "FirstName": "Support",
+      "LastName": "Account",
+      "Account": "manager-support@uorak.com",
+      "Password": "7a8489429cff6d2bc3ac91ca8ac09ad0",
+      "Token": "682905",
+      "Repository": "f496066a1371151df6ba00068c197a3f",
+      "USR_ID": "f496066a1371151df6ba00068c197a3f",
+      "USR_LOGGED": "Support Account",
+      "PROFILE": "SUPPORT ACCOUNT",
+      "LANGUAGE": "pt",
+      "SSW_ID": "f496066a1371151df6ba00068c197a3f",
+      "USR_AUTH": "f496066a1371151df6ba00068c197a3f"
+    }
+  ]
+}
