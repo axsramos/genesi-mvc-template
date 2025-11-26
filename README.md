@@ -3,7 +3,7 @@
 > Template MVC Base em PHP  
 
 <img src="https://img.shields.io/badge/license-MIT-green"><img/>
-<img src="https://img.shields.io/badge/version-2.0.0-blue"><img/>
+<img src="https://img.shields.io/badge/version-2.1.0-blue"><img/>
 <img src="https://img.shields.io/badge/biuld-2511261953-orange"><img/>
 
 Ver mais em [Changelog](./docs/v2.1.0/whatsnew.md)
