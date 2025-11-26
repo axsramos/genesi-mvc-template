@@ -1,6 +1,5 @@
 # Novidades na Versão 2.0.0
 
-// Gere as informações para esta versão do whatsnew //
 ### **Visão Geral**
 
 A versão 2.0.0 do **SBAdmin - Project Manager** representa um marco significativo na evolução do nosso software de gestão de contas multi-tenant. Esta atualização foca em aprimorar a estabilidade, segurança e escalabilidade da plataforma, introduzindo melhorias substanciais na arquitetura e na experiência do usuário.

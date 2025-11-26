@@ -185,7 +185,7 @@ class CasUsrModel extends CasUsrMD
         return boolval($rows);
     }
 
-    public function checkLogin(): bool
+    public function checkLogin(bool $social_login = false): bool
     {
         $selectedFields = array('CasUsrCod', 'CasUsrNme', 'CasUsrSnm', 'CasUsrNck', 'CasUsrDsc', 'CasUsrDmn', 'CasUsrLgn', 'CasUsrBlq', 'CasUsrAudIns');
 
@@ -198,7 +198,11 @@ class CasUsrModel extends CasUsrMD
             $qry .= ', ' . $field;
         }
         $qry .= " FROM CasUsr";
-        $qry .= " WHERE CasUsrDmn = :CasUsrDmn AND CasUsrLgn = :CasUsrLgn AND CasUsrPwd = :CasUsrPwd";
+        if ($social_login) {
+            $qry .= " WHERE CasUsrDmn = :CasUsrDmn AND CasUsrLgn = :CasUsrLgn";
+        } else {
+            $qry .= " WHERE CasUsrDmn = :CasUsrDmn AND CasUsrLgn = :CasUsrLgn AND CasUsrPwd = :CasUsrPwd";
+        }
         $qry .= ' ORDER BY CasUsrDmn, CasUsrLgn';
         $qry .= ' LIMIT 1;';
         
@@ -207,7 +211,9 @@ class CasUsrModel extends CasUsrMD
          */
         $parameters[':CasUsrDmn'] = $this->att['CasUsrDmn'];
         $parameters[':CasUsrLgn'] = $this->att['CasUsrLgn'];
-        $parameters[':CasUsrPwd'] = $this->att['CasUsrPwd'];
+        if (! $social_login) {
+            $parameters[':CasUsrPwd'] = $this->att['CasUsrPwd'];
+        }
 
         /**
          * Run query

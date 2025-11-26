@@ -170,6 +170,9 @@ class RegisterClass extends AuthClass
         $new_data_user['Password'] = md5($data_account['Password']);
         $new_data_user['Token'] = $this->newTokenPassword();
         $new_data_user['Repository'] = $user_auth;
+        $new_data_user['Avatar'] = ($data_account['Avatar'] ?? Config::getPreferences('avatar_user'));
+        $new_data_user['Gender'] = ($data_account['Gender'] ?? '');
+        $new_data_user['Providers'] = ($data_account['Providers'] ?? '[]');
 
         // apply data session //
         $new_data_user['USR_ID'] = $user_auth;

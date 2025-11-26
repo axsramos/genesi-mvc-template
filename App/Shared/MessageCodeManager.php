@@ -404,6 +404,36 @@ class MessageCodeManager
                         break;
                 }
                 break;
+
+            case 625:
+                self::$message['Code'] = $code;
+                self::$message['Type'] = $msg::TYPE_MESSAGE_ERROR;
+                self::$message['Title'] = '';
+                switch ($lng) {
+                    case 'en':
+                        self::$message['Description'] = 'The app credentials are invalid.';
+                        break;
+
+                    default:
+                        self::$message['Description'] = 'Credenciais do aplicativo são inválidas..';
+                        break;
+                }
+                break;
+
+            case 626:
+                self::$message['Code'] = $code;
+                self::$message['Type'] = $msg::TYPE_MESSAGE_ERROR;
+                self::$message['Title'] = '';
+                switch ($lng) {
+                    case 'en':
+                        self::$message['Description'] = 'Authorization was denied.';
+                        break;
+
+                    default:
+                        self::$message['Description'] = 'Autorização foi negada.';
+                        break;
+                }
+                break;
         }
 
         return self::$message;

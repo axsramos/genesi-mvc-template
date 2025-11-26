@@ -26,6 +26,23 @@ include_once(App\Core\Config::$DIR_BASE . '/App/Views/SBAdmin/Partials/HeadLogin
                                     }
                                     ?>
                                     <form action="Login" method="post">
+                                        <?php
+                                        if (App\Core\Config::$AUTH_SIGN_GOOGLE) {
+                                            echo '<!-- Google Button -->';
+                                            echo '<div class="card card-body mb-3 text-center">';
+                                            echo '    <div class="col-md-12">';
+                                            echo '        <button class="btn btn-google ico-left" name="btnLoginWithGoogle">';
+                                            echo '            <img src="' . App\Core\Config::$URL_BASE . '/SBAdmin/images/google.png" style="max-height:32px; max-width:32px; margin-right:10px;" alt="google-icon"> Entrar com o Google';
+                                            echo '        </button>';
+                                            echo '    </div>';
+                                            echo '</div>';
+
+                                            echo '<!-- Login Separator -->';
+                                            echo '<div class="col-md-12 mb-3 text-center">';
+                                            echo '    <div class="separator-line">Ou, entre com seu e-mail</div>';
+                                            echo '</div>';
+                                        }
+                                        ?>
                                         <div class="form-floating mb-3">
                                             <label for="inputEmail">Endereço de E-Mail</label>
                                             <input class="form-control" id="inputEmail" name="inputEmail" type="email" placeholder="name@example.com" required />

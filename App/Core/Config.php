@@ -22,6 +22,8 @@ class Config
     public static $MAIL = null;
     public static $STATIC_AUTHETICATION = null;
     public static $AUTHENTICATION_SESSION_LIMIT = null;
+    public static $AUTH_SIGN_GOOGLE = null;
+    public static $SOCIAL_LOGIN_GOOGLE = null;
     public static $DB_STORAGE = null;
     public static $MONITORING_QUERY = null;
     private static $instance = null;
@@ -82,12 +84,13 @@ class Config
         self::$APP_ENV = self::$envs['APP_ENV'];
         self::$APP_DEBUG = (self::$envs['APP_DEBUG'] == 'true' ? true : false);
         self::$ISPRODUCTION = (self::$APP_ENV == 'production' ? true : false);
-        
+
 
         ini_set('display_errors', self::$APP_DEBUG);
 
         self::$APP_URL = self::$envs['APP_URL'];
-        self::$STATIC_AUTHETICATION = (self::$envs['STATIC_AUTHETICATION'] == 'true'? true : false);
+        self::$STATIC_AUTHETICATION = (self::$envs['STATIC_AUTHETICATION'] == 'true' ? true : false);
+        self::$AUTH_SIGN_GOOGLE = (self::$envs['AUTH_SIGN_GOOGLE'] == 'true' ? true : false);
         self::$AUTHENTICATION_SESSION_LIMIT = self::$envs['AUTHENTICATION_SESSION_LIMIT'];
 
         /**
@@ -136,6 +139,13 @@ class Config
             'MAIL_ENCRYPTION' => self::$envs['MAIL_ENCRYPTION'],
             'MAIL_FROM_ADDRESS' => self::$envs['MAIL_FROM_ADDRESS'],
             'MAIL_FROM_NAME' => self::$envs['MAIL_FROM_NAME'],
+        );
+
+        // Social Login Google //
+        self::$SOCIAL_LOGIN_GOOGLE = array(
+            'ID' => self::$envs['GOOGLE_CLIENT_ID'],
+            'SECRET' => self::$envs['GOOGLE_CLIENT_SECRET'],
+            'REDIRECT_URI' => self::$envs['GOOGLE_REDIRECT_URI'],
         );
 
         /**
@@ -242,7 +252,7 @@ class Config
 
         file_put_contents($path, $dataContent);
     }
-    
+
     public static function  getEnvs()
     {
         return self::$envs;
@@ -336,5 +346,22 @@ class Config
         }
 
         return $contact;
+    }
+
+    public static function getPreferences(string $type): string
+    {
+        $preferences = '';
+
+        switch ($type) {
+            case 'avatar_user':
+                if (isset(self::$envs['PREFERENCE_AVATAR_USER'])) {
+                    $preferences = self::$envs['PREFERENCE_AVATAR_USER'];
+                } else {
+                    $preferences = '/SBAdmin/images/emblem-small.jpg';
+                }
+                break;
+        }
+
+        return $preferences;
     }
 }

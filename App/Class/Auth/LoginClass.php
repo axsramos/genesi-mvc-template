@@ -13,9 +13,21 @@ use App\Models\CAS\CasTusModel;
 use App\Models\CAS\CasWksModel;
 use App\Helpers\ObtainBrowserName;
 use App\Helpers\ObtainClientInfo;
+use App\Core\ServiceMail;
+use Google\Service\ToolResults\Any;
 
 class LoginClass extends AuthClass
 {
+    private $social_login = false;
+    private $create_account = false;
+    private $avatar_user = '';  // Discontinue when adding a field to the CasUsr table. //
+
+    public function __construct()
+    {
+        return parent::__construct();
+        $this->avatar_user = Config::getPreferences('avatar_user'); // Discontinue when adding a field to the CasUsr table. //
+    }
+
     public function login(string $account_email, string $account_password, string $swap = ''): array
     {
         // validate form data //
@@ -34,13 +46,14 @@ class LoginClass extends AuthClass
         // user_auth quando swap é o repositório a ser trocado //
         $user_auth = (empty($swap) ? md5(strtolower($account_email)) : $swap);
         $user_pass = (empty($swap) ? md5($account_password) : $account_password);
-        
+        $this->create_account = $this->social_login;
+
         if (Config::$STATIC_AUTHETICATION === true) {
             /**
              * Static File
              */
             $path = Config::getPathUserAccounts();
-            
+
             if (file_exists($path)) {
                 $dataContent = json_decode(file_get_contents($path));
                 $nextSearchProfile = true;
@@ -52,7 +65,8 @@ class LoginClass extends AuthClass
                     if ($nextSearchProfile) {
                         foreach ($dataContent->AdministratorProfile as $item) {
                             if (strtolower($item->Account) == strtolower($account_email)) {
-                                if ($item->Password == $user_pass) {
+                                $this->create_account = false;
+                                if (($item->Password == $user_pass) || $this->social_login === true) {
                                     $result = $this->message->getMessage(0);
                                     $this->setSessionAuth($user_auth, $item);
                                     $nextSearchProfile = false;
@@ -70,7 +84,8 @@ class LoginClass extends AuthClass
                     if ($nextSearchProfile) {
                         foreach ($dataContent->OtherProfiles as $item) {
                             if (strtolower($item->Account) == strtolower($account_email)) {
-                                if ($item->Password == $user_pass) {
+                                $this->create_account = false;
+                                if (($item->Password == $user_pass) || $this->social_login === true) {
                                     $result = $this->message->getMessage(0);
                                     $this->setSessionAuth($user_auth, $item);
                                     $nextSearchProfile = false;
@@ -106,7 +121,8 @@ class LoginClass extends AuthClass
             /**
              * Validate Login
              */
-            if ($obCasUsrModel->checkLogin()) {
+            if ($obCasUsrModel->checkLogin($this->social_login)) {
+                $this->create_account = false;
                 if ($obCasUsrModel->CasUsrBlq == 'S') {
                     $result = $this->message->getMessage(615);
                 } else {
@@ -156,7 +172,7 @@ class LoginClass extends AuthClass
                  */
                 if ($result['Code'] == 0 && $result['Type'] == 'SUCCESS') {
                     $repositories = array();
-                    
+
                     // save new terminal //
                     $obCasWksModel = new CasWksModel();
                     $obCasWksModel->setSelectedFields();
@@ -248,7 +264,7 @@ class LoginClass extends AuthClass
                     }
 
                     $presentation = array(
-                        'AVATAR' => '/SBAdmin/images/emblem-small.jpg',
+                        'AVATAR' => $this->avatar_user, // add field on feat of the next version //
                         'USER' => $obCasUsrModel->CasUsrDsc,
                         'INTEGRATED' => $integratedDateStr,
                         'ACCOUNT' => $obCasUsrModel->CasUsrLgn . $obCasUsrModel->CasUsrDmn,
@@ -286,6 +302,61 @@ class LoginClass extends AuthClass
          */
         if ($result['Code'] > 0) {
             $logData = array('code' => $result['Code'], 'description' => $result['Description'], 'input' => array('account' => $account_email));
+            self::setLog(json_encode($logData), 'login_error', 'Others');
+        }
+
+        return $result;
+    }
+
+    public function loginSocial(array $credentials, string $dataAuthorized): array
+    {
+        $this->social_login = true;
+        $result = $this->login($credentials['Account'], $credentials['IdSocial']);
+
+        /**
+         * Log Error
+         */
+        if ($result['Code'] == 601 && $this->create_account == true) {
+            if ($this->create_account) {
+                $register = new RegisterClass();
+
+                $provider_data = array(
+                    'Provider' => $credentials['Provider'],
+                    'IdSocial'=> $credentials['IdSocial'],
+                    'Account' => $credentials['Account'],
+                    'FirstName' => $credentials['FirstName'],
+                    'LastName' => $credentials['LastName'],
+                    'Avatar'=> $credentials['Avatar'],
+                    'Gender' => $credentials['Gender'],
+                    'Locale' => $credentials['Locale'],
+                );
+                
+                $data_account = array(
+                    'FirstName' => $credentials['FirstName'],
+                    'LastName' => $credentials['LastName'],
+                    'Account' => $credentials['Account'],
+                    'Avatar'=> $credentials['Avatar'],
+                    'Gender' => ($credentials['Gender'] ?? ''),
+                    'Password' => $credentials['IdSocial'],
+                    'PasswordConfirm' => $credentials['IdSocial'],
+                    'Providers' => [$provider_data],
+                );
+
+                $this->avatar_user = $credentials['Avatar']; // Discontinue when adding a field to the CasUsr table. //
+
+                $result = (array) $register->createAccount($data_account);
+
+                if ($result['Code'] == 0 && $result['Type'] == 'SUCCESS') {
+                    $serviceMail = new ServiceMail();
+                    $r = $serviceMail->sendMailRegister($credentials['FirstName'], $credentials['Account']);
+
+                    header('Location: /Manager/Dashboard');
+                    exit;
+                }
+            }
+        }
+        if ($result['Code'] > 0) {
+            $logData = array('code' => $result['Code'], 'description' => $result['Description'], 'input' => array('account' => $credentials['Account']));
             self::setLog(json_encode($logData), 'login_error', 'Others');
         }
 

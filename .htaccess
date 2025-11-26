@@ -40,3 +40,11 @@ RewriteRule ^ index.php [L]
 <FilesMatch "^(docs/.*)$">
     Require all denied
 </FilesMatch>
+
+# Deny access to static auth files
+<Files UserAccounts.json>
+    Require all denied
+</Files>
+<FilesMatch "^(App/Static/Auth/.*)$">
+    Require all denied
+</FilesMatch>
